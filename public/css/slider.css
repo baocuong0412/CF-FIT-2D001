@@ -1,0 +1,9 @@
+/* Hover: Khi di chuột vào */
+.nav-item:hover {
+    background-color: red;
+}
+
+/* Active: Khi bấm vào */
+.nav-item.active {
+    background-color: red !important;
+}

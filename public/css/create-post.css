@@ -1,0 +1,46 @@
+.input-file .input-img {
+    padding: 12px 18px;
+    background: #00ad2d;
+    border: 1px solid #00ad2d;
+    position: relative;
+    color: #fff;
+    border-radius: 5px;
+    text-align: center;
+    float: left;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.input-file .input-img i {
+    margin-right: 5px;
+}
+
+.input-file .input-img .upload-img {
+    position: absolute;
+    z-index: 1000;
+    opacity: 0;
+    cursor: pointer;
+    right: 0;
+    top: 0;
+    height: 100%;
+    font-size: 0px;
+    width: 100%;
+}
+
+#display-img,
+#display-imgs {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+#display-img img,
+#display-imgs img {
+    width: 200px;
+    height: 200px;
+    margin-right: 15px;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
