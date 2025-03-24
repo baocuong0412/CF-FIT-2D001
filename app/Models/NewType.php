@@ -17,4 +17,9 @@ class NewType extends Model
     {
         return $this->hasMany(Rooms::class, 'new_type_id');
     }
+
+    public function PaymentHistories()
+    {
+        return $this->hasMany(PaymentHistory::class, 'new_type_id');
+    }
 }

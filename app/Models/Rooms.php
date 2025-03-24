@@ -47,4 +47,35 @@ class Rooms extends Model
     {
         return $this->hasMany(RoomImages::class, 'room_id');
     }
+
+    public function paymentHistories()
+    {
+        return $this->hasMany(PaymentHistory::class, 'room_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comments::class, 'room_id');
+    }
+
+    public function scopeSorted($query)
+    {
+        return $query->orderByRaw("CASE 
+                WHEN new_type_id = 4 THEN 1
+                WHEN new_type_id = 3 THEN 2
+                WHEN new_type_id = 2 THEN 3
+                WHEN new_type_id = 1 THEN 4
+                ELSE 5
+            END")
+            ->orderBy('created_at', 'desc');
+    }
+
+    public function scopeOutstanding($query)
+    {
+        return $query->orderByRaw("CASE 
+                WHEN new_type_id = 5 THEN 1 
+                ELSE 2
+            END")
+            ->orderBy('created_at', 'desc');
+    }
 }

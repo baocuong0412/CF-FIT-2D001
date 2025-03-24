@@ -69,7 +69,7 @@
                 </li>
             @endforeach
             <li class="nav-item">
-                <a href="#" class="nav-link text-white px-3">Tin Tức</a>
+                <a href="{{ route('news') }}" class="nav-link text-white px-3">Tin Tức</a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('price-list') }}" class="nav-link text-white px-3">Bảng giá</a>

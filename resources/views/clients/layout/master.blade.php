@@ -16,6 +16,9 @@
 <link rel="stylesheet" href="{{ asset('css/create-post.css') }}">
 <link rel="stylesheet" href="{{ asset('css/deposit-momey.css') }}">
 
+{{-- SweetAlert2 --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <body>
     @include('clients.blocks.header_user')
 

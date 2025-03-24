@@ -147,7 +147,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [
@@ -168,6 +168,19 @@ return [
             'database' => env('REDIS_CACHE_DB', '1'),
         ],
 
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Thêm cấu hình cho Table Admin
+    |--------------------------------------------------------------------------
+    |
+    | Để thêm cấu hình cho table Admin, bạn cần thêm cấu hình trong file database.php
+    | và thêm cấu hình trong file .env. Cấu hình để mới tạo 1 admin mặc định.
+    */
+    'admin' => [
+        'email' => env('ADMIN_EMAIL', 'admin123@example.com'),
+        'password' => env('ADMIN_PASSWORD', 'default_password'),
     ],
 
 ];

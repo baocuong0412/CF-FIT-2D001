@@ -9,8 +9,8 @@
             <h1 class="pt-2">Sửa tin đăng</h1>
             <hr>
             <div class="alert alert-warning p-3">
-                <h5>Lưu ý khi đăng tin</h5>
-                <ul>
+                <h5 class="text-danger">Lưu ý khi đăng tin</h5>
+                <ul class="text-danger">
                     <li>Nội dung phải viết bằng tiếng Việt có dấu</li>
                     <li>Tiêu đề tin không dài quá 100 kí tự</li>
                     <li>Điền đầy đủ thông tin để tin đăng hiệu quả hơn.</li>
@@ -37,6 +37,11 @@
                     <div>
                         <label class="form-label">Số Điện Thoại</label>
                         <input type="text" class="form-control" value="{{ auth()->user()->phone }}" disabled>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Mã Code</label>
+                        <input type="text" class="form-control" value="{{ Auth::user()->pay_code }}" disabled>
                     </div>
                 </div>
                 {{-- End Hiển thị thông tin người dùng --}}
@@ -134,7 +139,7 @@
                     <div id="display-imgs" class="d-flex flex-wrap gap-2">
                         @if (!empty($roomImages))
                             @foreach ($roomImages as $item)
-                                <img src="{{ $item->image }}" alt="Hình ảnh chi tiết" class="img-thumbnail">
+                                <img src="{{ $item->images }}" alt="Hình ảnh chi tiết" class="img-thumbnail">
                             @endforeach
                         @endif
                     </div>
@@ -220,7 +225,7 @@
 
                     <div>
                         <label class="form-label">Ngày Bắt Đầu</label>
-                        <input type="date" name="time_start" id="start_date" class="form-control">
+                        <input type="datetime-local" name="time_start" id="start_date" class="form-control">
                         @error('time_start')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
@@ -228,7 +233,7 @@
 
                     <div>
                         <label class="form-label">Ngày Kết Thúc</label>
-                        <input type="date" name="time_end" id="end_date" class="form-control">
+                        <input type="datetime-local" name="time_end" id="end_date" class="form-control">
                         @error('time_end')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
@@ -237,8 +242,9 @@
                 {{-- End Hiển thị thông tin bài đăng --}}
 
 
-                <div class="mt-5 mb-5">
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Tiếp Tục</button>
+                <div class="mt-5 mb-5 d-flex justify-content-between">
+                    <a href="{{ route('client.post-unpaid') }}" class="btn btn-danger" style="width: 40%;">Hủy</a>
+                    <button type="submit" class="btn btn-primary" style="width: 40%;">Tiếp Tục</button>
                 </div>
             </div>
 
@@ -305,12 +311,33 @@
             });
 
 
-            // Đặt ngày bắt đầu và ngày kết thúc mặc định
+            // Đặt ngày bắt đầu và ngày kết thúc mặc định khi chọn loại mới
             $("#new_type").change(function() {
                 let today = new Date();
-                $("#start_date").val(today.toISOString().split('T')[0]);
-                $("#end_date").val(new Date(today.setDate(today.getDate() + 5)).toISOString().split('T')[
-                    0]);
+
+                // Lấy giờ, phút hiện tại và đảm bảo có 2 chữ số (padStart)
+                let year = today.getFullYear();
+                let month = String(today.getMonth() + 1).padStart(2, '0');
+                let day = String(today.getDate()).padStart(2, '0');
+                let hours = String(today.getHours()).padStart(2, '0');
+                let minutes = String(today.getMinutes()).padStart(2, '0');
+
+                let startDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+                // Ngày kết thúc +5 ngày
+                let endDate = new Date(today);
+                endDate.setDate(today.getDate() + 5);
+                let endYear = endDate.getFullYear();
+                let endMonth = String(endDate.getMonth() + 1).padStart(2, '0');
+                let endDay = String(endDate.getDate()).padStart(2, '0');
+                let endHours = String(endDate.getHours()).padStart(2, '0');
+                let endMinutes = String(endDate.getMinutes()).padStart(2, '0');
+
+                let endDateTime = `${endYear}-${endMonth}-${endDay}T${endHours}:${endMinutes}`;
+
+                // Gán giá trị cho input
+                $("#start_date").val(startDateTime);
+                $("#end_date").val(endDateTime);
             });
         });
     </script>

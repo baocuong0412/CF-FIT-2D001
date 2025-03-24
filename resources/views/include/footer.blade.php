@@ -89,6 +89,6 @@
         </div>
     </div>
 </div>
-<div class="text-center bg-warning">
+<div class="text-center bg-warning p-2">
     <p>Copyright © Đồ án tốt nghiệp ngành CNTT</p>
 </div>

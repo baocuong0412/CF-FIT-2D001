@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('room_image', function (Blueprint $table) {
             $table->id();
-            $table->string('image', 255);
+            $table->string('images', 255);
             $table->unsignedBigInteger('room_id');
             $table->foreign('room_id')->references('id')->on('rooms')->onDelete('CASCADE');
             $table->timestamps();

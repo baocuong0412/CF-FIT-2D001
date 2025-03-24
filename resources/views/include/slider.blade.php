@@ -1,15 +1,14 @@
 <div>
-
     {{-- Start Carousel --}}
-    <div id="carouselExampleCaptions" class="carousel slide">
+    <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
         <div class="carousel-inner">
-            @foreach (['slider-1.png', 'slider-2.png', 'slider-3.png'] as $index => $image)
+            @foreach ($sliders as $index => $slider)
                 <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                    <img src="{{ asset('images/' . $image) }}" class="d-block mx-auto w-75" style="height: 500px;"
-                        alt="{{ $image }}">
+                    <img src="{{ $slider->imageSlider }}" class="d-block mx-auto w-75" style="height: 500px;"
+                        alt="imageSlider">
                     <div class="carousel-caption d-none d-md-block">
-                        <h5>Title</h5>
-                        <p>Description</p>
+                        <h5>{{ $slider->title }}</h5>
+                        <p>{{ $slider->description }}</p>
                     </div>
                 </div>
             @endforeach
@@ -28,8 +27,8 @@
     {{-- End Carousel --}}
 
     {{-- Start Search --}}
-    <div class="mt-2 bg-warning mx-auto rounded w-75 p-3">
-        <form action="#" method="get" class="mt-2">
+    <div class="mt-2 bg-warning mx-auto rounded w-75 p-3" style="height: 70px;">
+        <form action="{{ route('search') }}" method="get">
             <div class="d-grid gap-2" style="grid-template-columns: 3fr 2fr 2fr 2fr 2fr 1fr;">
                 {{-- Categories --}}
                 <select name="category" id="category" class="form-select">
@@ -75,24 +74,24 @@
                 <select name="price" id="price" class="form-select">
                     @if (request()->segment(2) === 'Cho-thue-mat-bang')
                         <option value="">---Chọn Giá---</option>
-                        <option value="1">10 - 20 triệu</option>
-                        <option value="2">20 - 40 triệu</option>
-                        <option value="3">40 - 60 triệu</option>
-                        <option value="4">60 - 100 triệu</option>
-                        <option value="5">Thỏa thuận</option>
+                        <option value="10-20">10 - 20 triệu</option>
+                        <option value="20-40">20 - 40 triệu</option>
+                        <option value="40-60">40 - 60 triệu</option>
+                        <option value="60-100">60 - 100 triệu</option>
+                        <option value="0">Thỏa thuận</option>
                     @elseif (request()->segment(2) === 'Tim-nguoi-o-ghep')
                         <option value="">---Số Người---</option>
-                        <option value="1">1 - 3 người</option>
-                        <option value="2">3 - 6 người</option>
-                        <option value="3">Trên 6 người</option>
+                        <option value="1-3">1 - 3 người</option>
+                        <option value="3-6">3 - 6 người</option>
+                        <option value="6-999">Trên 6 người</option>
                     @else
                         <option value="">---Chọn Giá---</option>
-                        <option value="1">Dưới 3 triệu</option>
-                        <option value="2">3 - 5 triệu</option>
-                        <option value="3">5- 8 triệu</option>
-                        <option value="4">8 -10 triệu</option>
-                        <option value="5">10 - 15 triệu</option>
-                        <option value="6">Trên 15 triệu</option>
+                        <option value="0-3">Dưới 3 triệu</option>
+                        <option value="3-5">3 - 5 triệu</option>
+                        <option value="5-8">5 - 8 triệu</option>
+                        <option value="8-10">8 - 10 triệu</option>
+                        <option value="10-15">10 - 15 triệu</option>
+                        <option value="15-999">Trên 15 triệu</option>
                     @endif
                 </select>
 

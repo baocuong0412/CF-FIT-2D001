@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title', 255);
             $table->string('slug', 255)->unique();
-            $table->string('image_logo', 255);
+            $table->string('image_new', 255);
             $table->text('description');
             $table->boolean('status')->default(1);
             $table->unsignedBigInteger('admin_id');

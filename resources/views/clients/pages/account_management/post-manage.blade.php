@@ -64,7 +64,7 @@
                         <tbody>
                             @foreach ($rooms as $item)
                                 <tr>
-                                    <td>#MTR{{ $item->id }}</td>
+                                    <td>#MTR{{ $loop->iteration }}</td>
 
                                     <td>
                                         <img src="{{ $item->image_logo }}" alt=""
@@ -75,15 +75,27 @@
                                             {{ $item->title }}
                                         </div>
                                         <div>
-                                            <a href="{{ route('client.create.edit', ['id' => $item->id]) }}"
-                                                class="text-warning me-2">
-                                                <i class="fa-solid fa-pen-to-square"></i>
-                                                Sửa
-                                            </a>
-                                            <a href="#" class="text-danger delete-btn" data-id="{{ $item->id }}">
-                                                <i class="fa-solid fa-trash"></i>
-                                                Xóa
-                                            </a>
+
+                                            @if ($item->status == 1)
+                                                <a href="#" class="text-danger cancel-btn me-2"
+                                                    data-id="{{ $item->id }}">
+                                                    <i class="fa-solid fa-ban"></i>
+                                                    Hủy
+                                                </a>
+                                            @elseif ($item->status == 2)
+                                                <a href="#" class="text-warning me-2 delete-btn" data-id="{{ $item->id }}">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                    Xóa
+                                                </a>
+                                            @elseif ($item->status == 3)
+                                                <a href="{{ route('client.create.edit', ['id' => $item->id]) }}"
+                                                    class="text-warning me-2">
+                                                    <i class="fa-solid fa-file-export"></i>
+                                                    Gia Hạn
+                                                </a>
+                                            @endif
+
+
                                         </div>
                                     </td>
                                     <td>
@@ -113,9 +125,6 @@
                                             Không xác định
                                         @endif
                                     </td>
-
-
-
                                 </tr>
                             @endforeach
 
@@ -125,9 +134,57 @@
             </div>
         </div>
     </div>
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: "{{ session('success') }}",
+                showConfirmButton: false,
+                timer: 2000
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: "{{ session('error') }}",
+                showConfirmButton: true
+            });
+        </script>
+    @endif
 @endsection
 
 @section('js_client')
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/classic/ckeditor.js"></script>
+    <script>
+        $(document).ready(function() {
+            let successMessage = @json(session('success', ''));
+            let errorMessage = @json(session('error', ''));
+
+            if (successMessage !== '') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: successMessage,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+
+            if (errorMessage !== '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: errorMessage,
+                    showConfirmButton: true
+                });
+            }
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
@@ -137,25 +194,64 @@
                 let id = $(this).data("id");
 
                 Swal.fire({
-                    title: "Bạn có chắc chắn muốn xóa?",
-                    text: "Hành động này không thể hoàn tác!",
+                    title: "Bạn chắc chắn muốn xóa bài này?",
+                    text: "Số tiền bạn thanh toán sẽ không được hoàn lại!!",
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#d33",
                     cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Xóa",
+                    confirmButtonText: "Xác Nhận",
                     cancelButtonText: "Hủy"
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: `/client/delete-post/${id}`,
-                            type: "DELETE", // Sử dụng đúng method DELETE
+                            url: `/client/delete/${id}`,
+                            type: "POST", // Sử dụng đúng method DELETE
                             data: {
                                 '_token': '{{ csrf_token() }}'
                             },
                             success: function(response) {
-                                Swal.fire("Đã xóa!",
-                                    "Bài đăng đã được xóa thành công.",
+                                Swal.fire("Đã hủy!",
+                                    "Bài đăng đã được hủy thành công.",
+                                    "success");
+                                setTimeout(() => location.reload(), 1000);
+                            },
+                            error: function(xhr, status, error) {
+                                Swal.fire("Lỗi!",
+                                    `Có lỗi xảy ra: ${xhr.responseText}`,
+                                    "error");
+                            }
+
+                        });
+                    }
+                });
+            });
+
+
+            $(".cancel-btn").on("click", function(e) {
+                e.preventDefault();
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: "Bạn chắc chắn muốn hủy bài này?",
+                    text: "Số tiền bạn thanh toán sẽ được hoàn lại!! Số tiền sẻ được hoàn lại vào số dư tài khoản của bạn.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Xác Nhận",
+                    cancelButtonText: "Hủy"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `/client/cancel-post/${id}`,
+                            type: "POST", // Sử dụng đúng method DELETE
+                            data: {
+                                '_token': '{{ csrf_token() }}'
+                            },
+                            success: function(response) {
+                                Swal.fire("Đã hủy!",
+                                    "Bài đăng đã được hủy thành công.",
                                     "success");
                                 setTimeout(() => location.reload(), 1000);
                             },

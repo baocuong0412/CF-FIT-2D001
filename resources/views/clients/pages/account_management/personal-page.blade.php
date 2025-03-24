@@ -10,7 +10,7 @@
                 <h1 class="pt-2">Thông tin cá nhân</h1>
                 <hr>
 
-                <form action="#" method="post" enctype="multipart/form-data">
+                <form action="{{ route('client.update-personal-page') }}" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="row text-center">
                         <div>
@@ -52,8 +52,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Tên hiển thị:</label>
-                                <input type="text" class="form-control" name="display_name"
-                                    value="{{ Auth::user()->name }}">
+                                <input type="text" class="form-control" name="name" value="{{ Auth::user()->name }}">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Số điện thoại:</label>
@@ -69,7 +68,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Facebook:</label>
-                                <input type="text" class="form-control" name="facebook"
+                                <input type="text" class="form-control" name="facebook" placeholder="Đường link facebook"
                                     value="{{ Auth::user()->facebook }}">
                             </div>
                             <div class="col-md-12 mb-3">
@@ -78,56 +77,18 @@
                                     value="{{ Auth::user()->address }}">
                             </div>
 
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 mb-3 d-flex align-items-center">
                                 <label class="form-label me-5">Mật khẩu:</label>
 
-                                <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#exampleModal">
-                                    Đổi mật khẩu
-                                </button>
+                                <!-- Nút Đổi mật khẩu -->
+                                <button type="button" id="changePasswordBtn" class="btn btn-primary">Đổi mật khẩu</button>
 
-                                <!-- Modal -->
-                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                                    aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Thay Đổi Mật Khẩu
-                                                </h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="mb-3">
-                                                    <label for="old-password" class="form-label">Mật khẩu cũ:</label>
-                                                    <div class="input-group">
-                                                        <input type="password" class="form-control" id="old-password"
-                                                            name="old_password">
-                                                        <button class="btn btn-outline-secondary eye-icon" type="button">
-                                                            <i class="fas fa-eye"></i>
-                                                        </button>
-                                                    </div>
-
-                                                    <label for="password" class="form-label mt-2">Mật khẩu</label>
-                                                    <div class="input-group">
-                                                        <input type="password" class="form-control" id="password"
-                                                            name="password">
-                                                        <button class="btn btn-outline-secondary eye-icon" type="button">
-                                                            <i class="fas fa-eye"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Hủy</button>
-                                                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <!-- Form nhập mật khẩu (ẩn ban đầu) -->
+                                <div id="passwordFields" style="display: none;" class="ms-3">
+                                    <input type="password" id="newPassword" name="new_password" class="form-control"
+                                        placeholder="Nhập mật khẩu mới">
                                 </div>
-                                {{-- End Modal --}}
+
                             </div>
                         </div>
 
@@ -147,7 +108,13 @@
 
 @section('js_client')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
+        $('#changePasswordBtn').click(function() {
+            $('#passwordFields').toggle(); // Hiển thị/ẩn input mật khẩu
+        });
+
         function ImageFileAsUrl() {
             const fileInput = $("#upload-img")[0];
             const avatarImg = $("#avatar-img");
@@ -177,19 +144,28 @@
             $("#upload-img").off().on("change", ImageFileAsUrl);
             $("#remove-btn").off().on("click", removeImage);
 
-            // Hiển thị mật khẩu
-            $(".eye-icon").off().on("click", function() {
-                const passwordInput = $(this).prev();
-                const eyeIconTag = $(this).find("i");
+            let successMessage = @json(session('success'));
+            let errorMessage = @json(session('error'));
 
-                if (passwordInput.attr("type") === "password") {
-                    passwordInput.attr("type", "text");
-                    eyeIconTag.removeClass("fa-eye").addClass("fa-eye-slash");
-                } else {
-                    passwordInput.attr("type", "password");
-                    eyeIconTag.removeClass("fa-eye-slash").addClass("fa-eye");
-                }
-            });
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: successMessage,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+
+            if (errorMessage) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: errorMessage,
+                    showConfirmButton: true
+                });
+            }
+
         });
     </script>
 @endsection

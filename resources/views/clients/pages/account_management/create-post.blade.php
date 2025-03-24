@@ -9,38 +9,44 @@
             <h1 class="pt-2">Tạo tin đăng mới</h1>
             <hr>
             <div class="alert alert-warning p-3">
-                <h5>Lưu ý khi đăng tin</h5>
-                <ul>
+                <h5 class="text-danger">Lưu ý khi đăng tin</h5>
+                <ul class="text-danger">
                     <li>Nội dung phải viết bằng tiếng Việt có dấu</li>
                     <li>Tiêu đề tin không dài quá 100 kí tự</li>
-                    <li>Điền đầy đủ thông tin để tin đăng hiệu quả hơn.</li>
+                    <li>Điền đầy đủ thông tin <strong>CÁ NHÂN</strong> để tin đăng hiệu quả hơn.</li>
                     <li>Hình ảnh rõ ràng giúp tăng lượng xem và giao dịch nhanh chóng!</li>
                     <li>Chọn loại tin, ngày bắt đầu và kết thúc trước khi gửi.</li>
                 </ul>
             </div>
         </div>
         <hr>
-        <form action="{{ route('client.create.store') }}" method="post" enctype="multipart/form-data">
-            @csrf
-            <div class="container">
-                <h3>Thông Tin Người Đăng</h3>
-                {{-- Hiển thị thông tin người dùng --}}
-                <div class="d-flex gap-3">
-                    <div>
-                        <label class="form-label">Mã Thành Viên</label>
-                        <input type="text" class="form-control" value="#KH{{ auth()->user()->id }}" disabled>
-                    </div>
-                    <div>
-                        <label class="form-label">Tên Người Dùng</label>
-                        <input type="text" class="form-control" value="{{ auth()->user()->name }}" disabled>
-                    </div>
-                    <div>
-                        <label class="form-label">Số Điện Thoại</label>
-                        <input type="text" class="form-control" value="{{ auth()->user()->phone }}" disabled>
-                    </div>
-                </div>
-                {{-- End Hiển thị thông tin người dùng --}}
 
+        <div class="container">
+            <h3>Thông Tin Người Đăng</h3>
+            {{-- Hiển thị thông tin người dùng --}}
+            <div class="d-flex gap-3">
+                <div>
+                    <label class="form-label">Mã Thành Viên</label>
+                    <input type="text" class="form-control" value="#KH{{ auth()->user()->id }}" disabled>
+                </div>
+                <div>
+                    <label class="form-label">Tên Người Dùng</label>
+                    <input type="text" class="form-control" value="{{ auth()->user()->name }}" disabled>
+                </div>
+                <div>
+                    <label class="form-label">Số Điện Thoại</label>
+                    <input type="text" class="form-control" value="{{ auth()->user()->phone }}" disabled>
+                </div>
+
+                <div>
+                    <label class="form-label">Mã Code</label>
+                    <input type="text" class="form-control" value="{{ Auth::user()->pay_code }}" disabled>
+                </div>
+            </div>
+            {{-- End Hiển thị thông tin người dùng --}}
+
+            <form action="{{ route('client.create.store') }}" method="post" enctype="multipart/form-data">
+                @csrf
                 {{--  Hiển thị thông tin mô tả --}}
                 <h3 class="mt-3">Thông Tin Mô Tả</h3>
                 <div class="row g-3">
@@ -194,7 +200,7 @@
                             <option value="">--- Chọn loại tin ---</option>
                             @foreach ($newType as $item)
                                 <option value="{{ $item->id }}">
-                                    {{ sprintf('%s (%s VNĐ)', $item->name_type, $item->price) }}</option>
+                                    {{ sprintf('%s (%s VNĐ/ngày)', $item->name_type, $item->price) }}</option>
                             @endforeach
                         </select>
                         @error('new_type_id')
@@ -204,7 +210,7 @@
 
                     <div>
                         <label class="form-label">Ngày Bắt Đầu</label>
-                        <input type="date" name="time_start" id="start_date" class="form-control">
+                        <input type="datetime-local" name="time_start" id="start_date" class="form-control">
                         @error('time_start')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
@@ -212,7 +218,7 @@
 
                     <div>
                         <label class="form-label">Ngày Kết Thúc</label>
-                        <input type="date" name="time_end" id="end_date" class="form-control">
+                        <input type="datetime-local" name="time_end" id="end_date" class="form-control">
                         @error('time_end')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
@@ -224,14 +230,14 @@
                 <div class="mt-5 mb-5">
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Tiếp Tục</button>
                 </div>
-            </div>
-
-        </form>
+            </form>
+        </div>
     </div>
 @endsection
 
 @section('js_client')
     <script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/classic/ckeditor.js"></script>
+
     <script>
         $(document).ready(function() {
             ClassicEditor.create(document.querySelector('#description')).catch(error => console.error(error));
@@ -287,12 +293,33 @@
                 filterOptions("#ward option", "district", $(this).val());
             });
 
-            // Đặt ngày bắt đầu và ngày kết thúc mặc định
+            // Đặt ngày bắt đầu và ngày kết thúc mặc định khi chọn loại mới
             $("#new_type").change(function() {
                 let today = new Date();
-                $("#start_date").val(today.toISOString().split('T')[0]);
-                $("#end_date").val(new Date(today.setDate(today.getDate() + 5)).toISOString().split('T')[
-                    0]);
+
+                // Lấy giờ, phút hiện tại và đảm bảo có 2 chữ số (padStart)
+                let year = today.getFullYear();
+                let month = String(today.getMonth() + 1).padStart(2, '0');
+                let day = String(today.getDate()).padStart(2, '0');
+                let hours = String(today.getHours()).padStart(2, '0');
+                let minutes = String(today.getMinutes()).padStart(2, '0');
+
+                let startDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+                // Ngày kết thúc +5 ngày
+                let endDate = new Date(today);
+                endDate.setDate(today.getDate() + 5);
+                let endYear = endDate.getFullYear();
+                let endMonth = String(endDate.getMonth() + 1).padStart(2, '0');
+                let endDay = String(endDate.getDate()).padStart(2, '0');
+                let endHours = String(endDate.getHours()).padStart(2, '0');
+                let endMinutes = String(endDate.getMinutes()).padStart(2, '0');
+
+                let endDateTime = `${endYear}-${endMonth}-${endDay}T${endHours}:${endMinutes}`;
+
+                // Gán giá trị cho input
+                $("#start_date").val(startDateTime);
+                $("#end_date").val(endDateTime);
             });
         });
     </script>

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('pay_code', 255)->unique();
             $table->unsignedBigInteger('pay_price');
-            $table->boolean('pay_status')->default(0);
-            $table->boolean('expired')->default(0);
+            $table->string('payment_method', 255);
+            $table->boolean('status')->default(1);
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL');
             $table->unsignedBigInteger('room_id')->nullable();

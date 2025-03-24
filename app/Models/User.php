@@ -21,18 +21,18 @@ class User extends Authenticatable
 
     protected $guarded = [];
 
-    // protected static function boot()
-    // {
-    //     parent::boot();
+    protected static function boot()
+    {
+        parent::boot();
 
-    //     static::creating(function ($user) {
-    //         do {
-    //             $payCode = 'PAY-MKH-' . mt_rand(100000, 999999);
-    //         } while (User::where('pay_code', $payCode)->exists());
+        static::creating(function ($user) {
+            do {
+                $payCode = 'PAY-CODE-' . mt_rand(100000, 999999);
+            } while (User::where('pay_code', $payCode)->exists());
 
-    //         $user->pay_code = $payCode;
-    //     });
-    // }
+            $user->pay_code = $payCode;
+        });
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -60,5 +60,24 @@ class User extends Authenticatable
     public function rooms()
     {
         return $this->hasMany(Rooms::class, 'user_id');
+    }
+
+    public function depositMoney()
+    {
+        return $this->hasMany(DepositMoney::class, 'user_id');
+    }
+
+    public function paymentHistory()
+    {
+        return $this->hasMany(PaymentHistory::class, 'user_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comments::class, 'user_id');
+    }
+
+    public function reply() {
+        return $this->hasMany(Replies:: class, 'user_id ');
     }
 }

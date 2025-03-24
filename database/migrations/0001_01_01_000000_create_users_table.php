@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('address', 255)->nullable();
             $table->string('avatar', 255)->nullable();
             $table->unsignedBigInteger('balance')->default(0);
-            // $table->string('pay_code')->unique();
+            $table->string('pay_code')->unique();
             $table->string('zalo', 255)->nullable();
             $table->string('facebook', 255)->nullable();
             $table->boolean('status')->default(1);

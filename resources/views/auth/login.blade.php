@@ -4,6 +4,12 @@
     </div>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
+    @if (session('error'))
+        <div class="mb-4 text-red-600 font-semibold text-center">
+            {{ session('error') }}
+        </div>
+    @endif
+
 
     <form method="POST" action="{{ route('login') }}">
         @csrf
@@ -34,7 +40,7 @@
                         class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
                     <span class="ms-2 text-sm text-gray-600">{{ __('Nhớ tài khoản của tôi') }}</span>
                 </label>
-        
+
                 <!-- Quên mật khẩu? -->
                 @if (Route::has('password.request'))
                     <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -44,7 +50,7 @@
                 @endif
             </div>
         </div>
-        
+
 
         <div class="text-center mt-4">
             <div>
@@ -56,9 +62,10 @@
 
         <div class="mt-4">
             <div class="flex justify-center border-2 border-gray-400 p-2 rounded-lg">
-                <img src="{{ asset('images/logo-google.png') }}" alt="logo-google" style="width: 30px; margin-right: 2px">
+                <img src="{{ asset('images/logo-google.png') }}" alt="logo-google"
+                    style="width: 30px; margin-right: 2px">
                 <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mt-1 "
-                    href="{{ route('google.redirect')}}">
+                    href="{{ route('google.redirect') }}">
                     {{ __('Đăng nhập bằng Google.') }}
                 </a>
             </div>

@@ -28,7 +28,7 @@
                         <tbody>
                             @foreach ($rooms as $item)
                                 <tr>
-                                    <td>#MTR{{ $item->id }}</td>
+                                    <td>#MTR{{ $loop->iteration }}</td>
 
                                     <td>
                                         <img src="{{ $item->image_logo }}" alt=""
@@ -66,10 +66,8 @@
                                     </td>
 
                                     <td>
-                                        <button data-room-id="{{ $item->id }}" type="button"
-                                            class="btn btn-primary pay-by-balance">
-                                            Thanh Toán
-                                        </button>
+                                        <a href="{{ route('client.payment', ['id' => $item->id]) }}"
+                                            class="btn btn-success">Thanh Toán</a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -80,6 +78,28 @@
             </div>
         </div>
     </div>
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: "{{ session('success') }}",
+                showConfirmButton: false,
+                timer: 2000
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: "{{ session('error') }}",
+                showConfirmButton: true
+            });
+        </script>
+    @endif
 @endsection
 
 @section('js_client')
@@ -87,94 +107,6 @@
 
     <script>
         $(document).ready(function() {
-            $(".pay-by-balance").on("click", async function(e) {
-                e.preventDefault();
-                const roomId = $(this).data("room-id");
-                const url = `{{ route('client.pay-by-balance', '') }}/${roomId}`;
-
-                try {
-                    const response = await fetch(url);
-                    const data = await response.json();
-
-                    if (!response.ok) {
-                        throw new Error(data.error || "Có lỗi xảy ra!");
-                    }
-
-                    // Hiển thị thông tin xác nhận thanh toán
-                    const {
-                        room_code,
-                        start_date,
-                        end_date,
-                        balance,
-                        priceNewType
-                    } = data;
-                    const formattedBalance = new Intl.NumberFormat().format(balance);
-                    const formattedPrice = new Intl.NumberFormat().format(priceNewType);
-
-                    Swal.fire({
-                        title: "Xác nhận thanh toán",
-                        html: `
-                    <p><strong>Mã tin:</strong> #MTR${room_code}</p>
-                    <p><strong>Ngày bắt đầu:</strong> ${start_date}</p>
-                    <p><strong>Ngày kết thúc:</strong> ${end_date}</p>
-                    <p><strong>Số dư tài khoản:</strong> ${formattedBalance} VNĐ</p>
-                    <p><strong>Số tiền cần thanh toán:</strong> ${formattedPrice} VNĐ</p>
-                `,
-                        icon: "info",
-                        showCancelButton: true,
-                        confirmButtonText: "Thanh toán",
-                        cancelButtonText: "Hủy",
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            confirmPayment(roomId);
-                        }
-                    });
-                } catch (error) {
-                    showError(error.message);
-                }
-            });
-
-            async function confirmPayment(roomId) {
-                const paymentUrl = `{{ route('client.pay-by-balance.confirm') }}/${roomId}`;
-
-                try {
-                    const response = await fetch(paymentUrl, {
-                        method: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                            "Content-Type": "application/json",
-                        },
-                    });
-
-                    const data = await response.json();
-                    if (!response.ok) {
-                        throw new Error(data.error || "Không thể thực hiện thanh toán.");
-                    }
-
-                    Swal.fire({
-                        icon: "success",
-                        title: "Thanh toán thành công!",
-                        text: "Cảm ơn bạn đã thanh toán!",
-                        confirmButtonText: "OK",
-                    }).then(() => {
-                        location.reload();
-                    });
-                } catch (error) {
-                    showError(error.message);
-                }
-            }
-
-            function showError(message) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Lỗi!",
-                    text: message,
-                    confirmButtonText: "OK",
-                });
-            }
-
-
-
             $(".delete-btn").on("click", function(e) {
                 e.preventDefault();
                 let id = $(this).data("id");
@@ -213,6 +145,31 @@
                 });
             });
 
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            let successMessage = @json(session('success', ''));
+            let errorMessage = @json(session('error', ''));
+
+            if (successMessage !== '') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: successMessage,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+
+            if (errorMessage !== '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: errorMessage,
+                    showConfirmButton: true
+                });
+            }
         });
     </script>
 @endsection
