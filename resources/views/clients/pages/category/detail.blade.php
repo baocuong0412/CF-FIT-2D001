@@ -146,7 +146,7 @@
                 <div class="rounded" style="background-color: #f1c40f">
                     {{-- Hinh anh --}}
                     <div class="pt-3">
-                        <img src="{{ $user->avatar }}" alt="avatar" class="rounded-circle"
+                        <img src="{{ $user->avatar ?? 'https://cdn.vectorstock.com/i/500p/52/38/avatar-icon-vector-11835238.jpg'}}" alt="avatar" class="rounded-circle"
                             style="width: 100px; height: 100px;">
                     </div>
 
@@ -190,7 +190,8 @@
                                     </div>
 
                                     <div class="ps-3 text-start" style="width: 400px;">
-                                        <h5 class="text-secondary-emphasis">{{ $relatedRoom->title }}</h5>
+                                        <h5 class="text-secondary-emphasis" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px;">
+                                            {{ $relatedRoom->title }}</h5>
                                         <p class="text-secondary-emphasis"><i
                                                 class="fa-solid fa-money-bill-wave me-2 text-primary"></i>{{ number_format($relatedRoom->price) }}/tháng
                                         </p>
