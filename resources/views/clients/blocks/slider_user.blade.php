@@ -19,7 +19,7 @@
             class="rounded-circle mt-3 mx-2" width="70" height="70">
         <div class="mt-3 ms-2">
             <span>Xin chào: <strong>{{ Auth::user()->name }}</strong></span><br>
-            <span>SĐT: <strong>{{ Auth::user()->phone }}</strong></span><br>
+            <span>SĐT: <strong>{{ Auth::user()->phone ?? 'Chưa có số' }}</strong></span><br>
             <span>Số dư: <strong>{{ number_format(Auth::user()->balance) }} VNĐ</strong></span>
         </div>
     </div>

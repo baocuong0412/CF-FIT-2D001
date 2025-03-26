@@ -24,13 +24,12 @@ class GoogleController extends Controller
             ['email' => $user->email],
             [
                 'name' => $user->name,
-                'email' => $user->email,
                 'password' => Hash::make('!password-123'),
             ]
         );
 
         Auth::login($userSystem);
 
-        return redirect()->route('/');
+        return redirect()->route('home');
     }
 }
