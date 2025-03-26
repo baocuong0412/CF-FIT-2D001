@@ -27,13 +27,14 @@ class AuthenticatedSessionController extends Controller
     {
         $user = User::where('email', $request->email)->first();
 
+        $request->authenticate();
+        
+        $request->session()->regenerate();
+        
         if ($user->status == 0) {
             return redirect()->back()->with('error', 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ với quản trị viên để biết thêm chi tiết.');
         }
-        $request->authenticate();
-
-        $request->session()->regenerate();
-
+        
         return redirect()->intended(route('home', absolute: false));
     }
 
